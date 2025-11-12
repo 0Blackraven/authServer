@@ -1,24 +1,51 @@
-# Logs
-logs
-*.log
-npm-debug.log*
-yarn-debug.log*
-yarn-error.log*
-pnpm-debug.log*
-lerna-debug.log*
-
+# ------------------------------------
+# 1. Dependency and Node.js Ignores
+# ------------------------------------
+# Node modules directory
 node_modules
-dist
-dist-ssr
-*.local
-
-# Editor directories and files
-.vscode/*
-!.vscode/extensions.json
-.idea
+# Yarn locks
+.yarn/cache
+.yarn/unplugged
+# npm logs
+npm-debug.log*
+.npm
+.nvm
+.cache
 .DS_Store
-*.suo
-*.ntvs*
-*.njsproj
-*.sln
-*.sw?
+
+# ------------------------------------
+# 2. Vite / React Client Ignores
+# ------------------------------------
+# Vite build output directory (default)
+/dist
+# Temporary files and caches
+.temp
+# Coverage directories
+/coverage
+# ESLint cache
+.eslintcache
+
+# ------------------------------------
+# 3. Express Server / Backend Ignores
+# ------------------------------------
+# Environment variables and sensitive files
+.env
+.env.*
+# TypeScript build output (often in a folder like 'build' or 'dist' in server)
+# If your server builds to /dist, it's covered above.
+# If it builds to a separate folder like 'build':
+/build
+
+# ------------------------------------
+# 4. IDE and OS Ignores
+# ------------------------------------
+# VS Code files
+.vscode/*
+!.vscode/settings.json
+!.vscode/tasks.json
+!.vscode/launch.json
+!.vscode/extensions.json
+# IntelliJ/Webstorm
+.idea/
+# macOS files
+.DS_Store
