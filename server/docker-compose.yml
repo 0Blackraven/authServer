@@ -1,0 +1,46 @@
+version: '3.8'
+
+services:
+
+  kafka:
+    image: confluentinc/cp-kafka:latest
+    hostname: kafka
+    container_name: kafka
+    ports:
+      - "9092:9092"
+      - "9093:9093"
+    environment:
+      KAFKA_KRAFT_MODE: "true"
+      KAFKA_PROCESS_ROLES: broker,controller 
+      KAFKA_NODE_ID: 1
+      KAFKA_CONTROLLER_QUORUM_VOTERS: 1@localhost:9093 
+      KAFKA_LISTENERS: PLAINTEXT://:9092,CONTROLLER://:9093 
+      KAFKA_LISTENER_SECURITY_PROTOCOL_MAP: CONTROLLER:PLAINTEXT,PLAINTEXT:PLAINTEXT 
+      KAFKA_INTER_BROKER_LISTENER_NAME: PLAINTEXT
+      KAFKA_CONTROLLER_LISTENER_NAMES: CONTROLLER
+      KAFKA_ADVERTISED_LISTENERS: PLAINTEXT://localhost:9092 
+      KAFKA_OFFSETS_TOPIC_REPLICATION_FACTOR: 1 
+      KAFKA_GROUP_INITIAL_REBALANCE_DELAY_MS: 0
+      CLUSTER_ID: QO0SDoZmTFCExg5Ji1FOKQ
+      # KAFKA_TRANSACTION_STATE_LOG_REPLICATION_FACTOR=1 
+      # KAFKA_TRANSACTION_STATE_LOG_MIN_ISR=1 
+
+    volumes:
+      - kafka_data:/var/lib/kafka/data 
+
+#   api:
+#     build: 
+#       context: . 
+#       dockerfile: Dockerfile
+#     container_name: auth_api
+#     ports:
+#       - "8080:8080"
+#     environment:
+#       KAFKA_BROKERS: kafka:9092 
+#     depends_on:
+#       - kafka 
+#     working_dir: /app
+#     command: npm start 
+
+volumes:
+  kafka_data:

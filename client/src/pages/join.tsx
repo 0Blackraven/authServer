@@ -1,20 +1,20 @@
 import { useState, useCallback, useMemo, useEffect } from "react";
 import axios from "axios";
 
-function debounce<T extends (...args: any[]) => void>(func: T, delay: number): (...args: Parameters<T>) => void {
-    let timeoutId: ReturnType<typeof setTimeout> | null = null;
+// function debounce<T extends (...args: any[]) => void>(func: T, delay: number): (...args: Parameters<T>) => void {
+//     let timeoutId: ReturnType<typeof setTimeout> | null = null;
 
-    return function(this: ThisParameterType<T>, ...args: Parameters<T>) {
-        if (timeoutId) {
-            clearTimeout(timeoutId);
-        }
+//     return function(this: ThisParameterType<T>, ...args: Parameters<T>) {
+//         if (timeoutId) {
+//             clearTimeout(timeoutId);
+//         }
 
-        timeoutId = setTimeout(() => {
-            func.apply(this, args);
-            timeoutId = null;
-        }, delay);
-    };
-}
+//         timeoutId = setTimeout(() => {
+//             func.apply(this, args);
+//             timeoutId = null;
+//         }, delay);
+//     };
+// }
 
 export function Join() {
     const [username, setUsername] = useState<string>("");
@@ -48,20 +48,14 @@ export function Join() {
         }
     }, [username]);
 
-    const debounceFetch = useMemo(() => {
-        return debounce(fetchUsernameAvailability, 500);
-    }, [fetchUsernameAvailability]);
+    // const debounceFetch = useMemo(() => {
+    //     return debounce(fetchUsernameAvailability, 500);
+    // }, [fetchUsernameAvailability]);
 
-    useEffect(() => {
-        if (username) {
-            debounceFetch();
-        } else {
-            setIsUsernameAvailable(null);
-            setAvailabilityMessage("");
-        }
-
-        return () => {};
-    }, [username, debounceFetch]);
+    const blurHandler = useCallback(()=>{
+        console.log("fetchUsername called");
+        fetchUsernameAvailability()
+    },[username])
 
     const handleSubmit = useCallback(async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
@@ -80,7 +74,7 @@ export function Join() {
                     provider: "default"
                 }
             );
-            console.log(res.data);
+            // console.log(res.data);
         } catch (e) {
             console.log(e);
         }
@@ -93,6 +87,7 @@ export function Join() {
                     placeholder="enter username" 
                     value={username}
                     onChange={(e) => setUsername(e.target.value)}
+                    onBlur={blurHandler}
                 />
                 <p className={`text-sm ${isUsernameAvailable === true ? 'text-green-600' : 'text-red-600'}`}>
                     {availabilityMessage}

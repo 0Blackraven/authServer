@@ -1,7 +1,7 @@
 import  express from "express";
 import {createServer} from "http";
 import dotenv from "dotenv";
-import userRouter from "./routes/userRoutes.ts";
+import userRouter from "./routes/userAuthRoutes.ts";
 import cors from 'cors';
 import { client } from "./redis/index.ts";
 
@@ -15,12 +15,7 @@ const server = createServer(app);
 const port = process.env.PORT || 8080;
 
 app.use('/users', userRouter);
-
-app.get('/users', 
-    (req,res)=> res.send('Server Alive')
-)
-
-
+    
 server.listen(port, ()=>{
     console.log(`Server is running on port ${port}`);
 });

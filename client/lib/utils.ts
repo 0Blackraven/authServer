@@ -8,17 +8,21 @@ export function cn(...inputs: ClassValue[]) {
 
 export const Authentication = async (): Promise<boolean> => {
   const token = localStorage.getItem("token");
+  const username = localStorage.getItem("username");
   if (!token) {
     return false;
   }
+  if (!username){
+    return false;
+  }
   try {
-    const response: AxiosResponse = await axios({
-      method: "post",
-      url: "/verification",
-      data: {
-        token: token
+    const response: AxiosResponse = await axios.post(
+      "http://localhost:8080/users/verification",
+      {
+        token: token,
+        username: username
       }
-    });
+    );
     return response.status === 200;
   } catch (e) {
     console.log(e);

@@ -74,6 +74,19 @@ export const findUserUsingEmail = async (email: string, password: string) =>{
     }
 }
 
+export const findUserUsingEmailForPasswordReset = async (email: string) =>{
+    try{
+        const userFound = await db.select().from(users).where(eq(users.email, email)).limit(1);
+        if(userFound.length === 0){
+            throw new Error("email not found");
+        }
+        return userFound[0];
+    }catch(e){
+        console.error(e);
+        throw e;
+    }
+}
+
 export const findUserUsingUsername = async (username: string, password: string) =>{
     try{
         const userFound = await db.select().from(users).where(eq(users.username, username)).limit(1);
@@ -89,5 +102,27 @@ export const findUserUsingUsername = async (username: string, password: string) 
     }catch(e){
         console.error(e);
         throw e;
+    }
+}
+
+// export const findUserToken = async (username:string) =>{
+//     const user = await db.select({refreshToken:users.refreshToken}).from(users).where(eq(users.username,username));
+//     if(user.length === 0){
+//         console.log("user not found");
+//         return null
+//     }
+//     return user[0].refreshToken;
+// }
+
+export const resetPassword = async (username:string, newPassword:string):Promise<boolean> =>{
+    try{
+        const userUpdate = await db.update(users).set({password: newPassword}).where(eq(users.username, username)).returning();
+        if(userUpdate.length === 0){
+            return false;
+        }
+        return true;
+    }catch(e){
+        console.error(e);
+        return false;
     }
 }
