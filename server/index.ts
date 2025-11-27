@@ -4,6 +4,8 @@ import dotenv from "dotenv";
 import userRouter from "./routes/userAuthRoutes.ts";
 import cors from 'cors';
 import { client } from "./redis/index.ts";
+import {createTopic} from './kafka/admin.ts';
+import { runConsumer } from "./kafka/consumer.ts";
 
 dotenv.config();
 
@@ -25,4 +27,11 @@ if(await client.exists('mybloom') === 0){
     await client.bf.reserve('mybloom',0.01,1000); 
 }
 
+runConsumer().catch((err)=>{
+    console.error("Error in Kafka consumer: ", err);
+});
+
+createTopic().catch((err) => {
+    console.error("Error in Kafka admin: ", err);
+});
 

@@ -1,6 +1,6 @@
 import {kafka} from './kafkaClient.ts';
 
-async function sendMail(event : {email: string, tempCode:string}){
+export async function sendMail(event : {email: string, tempCode:string, hash:string}){
     const producer = kafka.producer();
     await producer.connect();
     console.log("Kafka Producer connected");
@@ -17,5 +17,3 @@ async function sendMail(event : {email: string, tempCode:string}){
 
     await producer.disconnect();
 }
-
-sendMail({email: "joydeep", tempCode: "1234"});

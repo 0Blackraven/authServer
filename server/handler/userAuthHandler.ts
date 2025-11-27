@@ -5,6 +5,7 @@ import jwt from "jsonwebtoken";
 import type {User, UserProvider} from "../types.ts"
 import { addUser, findUserUsingEmail, findUserUsingEmailForPasswordReset, findUserUsingUsername, resetPassword } from "../services/userAuthServices.ts";
 import { client } from "../redis/index.ts"
+import { sendMail } from "../kafka/producer.ts";
 
 dotenv.config();
 const secretKey = process.env.SECRET_KEY;
@@ -152,8 +153,9 @@ export const sendTempCodeHandler = async (req:Request, res:Response) =>{
   try{
     const user = await findUserUsingEmailForPasswordReset(email);
     const tempCode = createTempCode();
+    const hash = createHash("sha256").update(tempCode + secretKey).digest("base64");
     client.set(tempCode, user.username, {EX: 5*60});
-    // send email for code logic here and redirect the user to a page where they enter the code and new password
+    sendMail({email, tempCode, hash});
     return res.status(200).json("Temp code has been sent to your email valid for 5 minutes");
 
   }catch(e){
@@ -163,10 +165,12 @@ export const sendTempCodeHandler = async (req:Request, res:Response) =>{
 }
 
 export const resetPasswordHandler = async (req:Request, res:Response) =>{
-  const {newPassword}:{newPassword:string} = req.body as {newPassword:string};
-  const {tempCode}:{tempCode:string} = req.params as {tempCode:string};
+  const {newPassword,tempCode}:{newPassword:string,tempCode:string} = req.body as {newPassword:string, tempCode:string};
   
   try{
+    if(!newPassword || !tempCode){
+      return res.status(400).json("New password or temp code missing");
+    }
     const username = await client.get(tempCode);
     if(!username){
       return res.status(400).json("Invalid or expired temp code");

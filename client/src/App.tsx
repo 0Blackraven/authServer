@@ -1,8 +1,10 @@
-import { Dashboard } from "./components/Dashboard";
 import {BrowserRouter as Router , Routes, Route} from "react-router-dom";
 import {PrivateRoutes} from "../lib/protectedRoute";
 import { Join } from "./pages/join";
 import { Login } from "./pages/login"
+import { ForgotPassword } from "./pages/forgotPassword";
+import { ResetPassword } from "./pages/resetPassword";
+import { SuperSecret } from "./pages/superSecret";
 
 function App() {
   return (
@@ -10,8 +12,10 @@ function App() {
       <Routes>
         <Route path="/login" element={<Login/>}/>
         <Route path="/join" element={<Join/>}/>
+        <Route path='/forgotPassword' element={<ForgotPassword/>}/>
+        <Route path='/resetPassword' element={<ResetPassword/>}/>
         <Route element={<PrivateRoutes/>}>
-          <Route path='/:code'  element={<Dashboard/>}/>
+          <Route path="/superSecret" element={<SuperSecret/>}/>
         </Route>
       </Routes>
     </Router>
