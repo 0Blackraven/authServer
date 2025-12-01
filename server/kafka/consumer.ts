@@ -10,23 +10,30 @@ const transporter = nodemailer.createTransport({
     auth:{
         user: process.env.SMTP_USERNAME,
         pass: process.env.SMTP_PASSWORD 
-    }
+    },
 });
 
 export async function runConsumer(){
     await consumer.connect();
-    console.log("Kafka Consumer connected");
-    console.log(process.env.BROKER);
+    // console.log("Kafka Consumer connected");
     await consumer.subscribe({topic: "sendMail", fromBeginning: true});
 
     await consumer.run({
         eachMessage: async ({topic, partition, message})=>{
-            const {email, tempCode, hash} = JSON.parse(message.value?.toString() || '{}');
+            const reciever = JSON.parse(message.value?.toString() || '{}');
+            // console.log("reciever",reciever);
+            if(!reciever){
+                console.error("No reciever found in message");
+                return;
+            }
+            const {email, tempCode, hash} = reciever;
+            // console.log(`Sending mail to ${email} with tempCode ${tempCode}`);
+            // console.log(process.env.SMTP_USERNAME);
             transporter.sendMail({
                 from: process.env.SMTP_USERNAME,
                 to: email,
                 subject: "Password Reset Request",
-                html: passwordResetTemplate(tempCode, hash)   
+                html: passwordResetTemplate(tempCode, hash) 
             })
         }   
     })

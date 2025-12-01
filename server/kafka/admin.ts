@@ -3,7 +3,7 @@ import { kafka } from './kafkaClient.ts';
 export async function createTopic() {
     const admin = kafka.admin();
     await admin.connect();
-    console.log("Kafka Admin connected");
+    // console.log("Kafka Admin connected");
 
     const topics = await admin.listTopics();
 
@@ -17,7 +17,7 @@ export async function createTopic() {
             ]
         })
     }
-    console.log("Kafka Topics created");
+    // console.log("Kafka Topics created");
     await admin.disconnect();
 }
 

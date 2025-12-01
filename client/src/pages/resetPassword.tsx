@@ -5,6 +5,7 @@ import { Eye, EyeOff } from "lucide-react";
 import React from "react";
 import { useNavigate } from "react-router-dom";
 import axios from "axios";
+import { useToken } from "../../context";
 
 export const ResetPassword = () => {
     const [passwordVisibility, setPasswordVisibility] = React.useState(false);
@@ -14,27 +15,34 @@ export const ResetPassword = () => {
     const [confirmPasswordVisibility, setConfirmPasswordVisibility] = React.useState(false);
     const [matchingPasswords, setMatchingPasswords] = React.useState(false);
     const navigate = useNavigate();
+    const { setToken } = useToken();
 
-    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) =>{
+    const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
         e.preventDefault();
-        if(newPassword !== confirmPassword){
+        if (newPassword !== confirmPassword) {
             alert("Passwords do not match");
             return;
         }
-        try{
-            const res = await axios.post("localhost:8080/users/resetPassword",{
-            newPassword: newPassword,
-            tempCode: code
-            });
+        try {
+            const res = await axios.post("http://localhost:8080/users/resetPassword", {
+                newPassword: newPassword,
+                tempCode: code
+            },
+                {
+                    withCredentials: true
+                });
 
-            if(res.status === 200){
+            if (res.status === 200) {
+                setToken(res.data as string);
                 alert("Password reset successful")
                 navigate("/superSecret");
-            }else{
-                alert("Failed to reset password: " + res.data);
             }
-        }catch(e){
-            alert("Something went wrong. Please try again later.");
+        } catch (e) {
+            if (axios.isAxiosError(e) && e.response) {
+                alert(e.response.data as string);
+            } else {
+                alert("Something went wrong");
+            }
         }
     }
 
@@ -64,7 +72,7 @@ export const ResetPassword = () => {
                             <Input
                                 type={passwordVisibility ? 'text' : 'password'}
                                 className="w-full h-12 border-2 border-gray-200 focus:border-[#22C55E] "
-                                onChange={(e)=>setNewPassword(e.target.value)}
+                                onChange={(e) => setNewPassword(e.target.value)}
                                 required
                             />
                             <button
@@ -86,9 +94,9 @@ export const ResetPassword = () => {
                             <Input
                                 type={confirmPasswordVisibility ? 'text' : 'password'}
                                 className="w-full h-12 border-2 border-gray-200 focus:border-[#22C55E] "
-                                onChange={(e)=>setConfirmPassword(e.target.value)}
-                                onBlur={()=>{
-                                    (newPassword === confirmPassword)?setMatchingPasswords(true):setMatchingPasswords(false)
+                                onChange={(e) => setConfirmPassword(e.target.value)}
+                                onBlur={() => {
+                                    (newPassword === confirmPassword) ? setMatchingPasswords(true) : setMatchingPasswords(false)
                                 }}
                                 required
                             />

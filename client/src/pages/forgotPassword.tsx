@@ -30,8 +30,11 @@ export const ForgotPassword = () => {
                 }
             )
         }catch(e){
-            setError(e as string);
-            return;
+            if(axios.isAxiosError(e) && e.response){
+            setError(e.response.data as string);
+            }else{
+            setError("Something went wrong");
+            }
         }
         setSubmitted(true);
         return;

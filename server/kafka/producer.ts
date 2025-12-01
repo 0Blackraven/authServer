@@ -1,19 +1,20 @@
 import {kafka} from './kafkaClient.ts';
 
-export async function sendMail(event : {email: string, tempCode:string, hash:string}){
+export async function sendMail(email: string, tempCode:string, hash:string){
     const producer = kafka.producer();
     await producer.connect();
-    console.log("Kafka Producer connected");
+    // console.log("Kafka Producer connected");
 
     await producer.send({
         topic: "sendMail",
         messages:[
             {
-                value: JSON.stringify({event})
+                value: JSON.stringify({email, tempCode, hash})
+                // value: JSON.stringify('hi')
             }
         ]
     })
-    console.log("Message sent");
+    // console.log("Message sent");
 
     await producer.disconnect();
 }
